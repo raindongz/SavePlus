@@ -45,12 +45,20 @@ func (server *Server) setUpRouter(){
 	router := gin.Default()
 
 	// below routes don't need authentication
-	//router.POST("/user/login", server.loginUser)
+
+	// User related operations(no need for authentication)
+		//router.POST("/post/list", server.getPostList)
+
+	// Post related operations(no need for authentication)
+		//router.POST("/user/login", server.loginUser)
 
 	// below routes need authentication
-	// authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
-	// authRoutes.POST("/post", server.createNewPost)
-	router.POST("/post", server.createNewPost)
+	//authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
+
+	// User related operations(Authentication needed)
+
+	// Post related operations(Authentication needed)
+		//authRoutes.POST("/post", server.createNewPost)
 	server.router = router
 }
 
