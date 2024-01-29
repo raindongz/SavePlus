@@ -30,8 +30,8 @@ func NewPasetoMaker(symmetricKey string) (Maker, error) {
 const DefaultTokenDuration = time.Hour * 24 * 7
 
 // CreateToken create new token for specific username and duration
-func (maker *PasetoMaker) CreateToken(username string, duration time.Duration) (string, error) {
-	payload, err := NewPayload(username, duration)
+func (maker *PasetoMaker) CreateToken(id string, duration time.Duration) (string, error) {
+	payload, err := NewPayload(id, duration)
 	if err != nil {
 		return "", err
 	}

@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/nioliu/commons/log"
+	"github.com/randongz/save_plus/token"
 	"go.uber.org/zap"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -42,7 +44,7 @@ func (server *Server) userLogin(ctx *gin.Context) {
 	}
 
 	// 1. check basic user info
-	if err = checkBasicUserInfoParams(ctx, req); err != nil {
+	if err = checkLoginUserInfoParams(ctx, req); err != nil {
 		log.ErrorWithCtxFields(ctx, "check basic user info failed", zap.Error(err))
 		statusCode = http.StatusBadRequest
 		return
@@ -60,16 +62,21 @@ func (server *Server) userLogin(ctx *gin.Context) {
 	if !(strings.EqualFold(usersInfo.HashedPassword, req.Password)) {
 		log.InfoWithCtxFields(ctx, "password is not equal")
 		statusCode = http.StatusUnauthorized
-		rsp.Status = 2
+		rspStatus = 2
 		return
 	}
 
-	// 4. generate token
-	server.tokenMaker.CreateToken()
+	// 4. generate userToken
+	userToken, err := server.tokenMaker.CreateToken(strconv.Itoa(int(usersInfo.ID)), token.DefaultTokenDuration)
+
+	// 5. return
+	rsp.AccessToken = userToken
+	statusCode = http.StatusOK
+	rspStatus = 1
 
 }
 
-func checkBasicUserInfoParams(ctx context.Context, userInfo *userLoginReq) error {
+func checkLoginUserInfoParams(ctx context.Context, userInfo *userLoginReq) error {
 	if userInfo.Password == "" {
 		log.ErrorWithCtxFields(ctx, "password is empty")
 		return fmt.Errorf("password is empty")
