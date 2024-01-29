@@ -48,14 +48,19 @@ func (server *Server) setUpRouter() {
 	// below routes don't need authentication
 	//router.POST("/user/userLogin", server.loginUser)
 
-	// below routes need authentication
-	// authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
-	// authRoutes.POST("/post", server.createNewPost)
-	router.POST("/post", server.createNewPost)
+	// User related operations(no need for authentication)
+		//router.POST("/post/list", server.getPostList)
 
-	// users api
-	userGroup := router.Group("/user")
-	userGroup.POST("/userLogin", server.userLogin)
+	// Post related operations(no need for authentication)
+		//router.POST("/user/login", server.loginUser)
+
+	// below routes need authentication
+	//authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
+
+	// User related operations(Authentication needed)
+
+	// Post related operations(Authentication needed)
+		//authRoutes.POST("/post", server.createNewPost)
 	server.router = router
 }
 
