@@ -2,13 +2,14 @@ package utils
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
-	"strconv"
 	"strings"
 	"time"
 )
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
+const numbers = "0123456789"
 
 func init(){
 	rand.NewSource(time.Now().UnixNano())
@@ -40,5 +41,14 @@ func RandomAvatar()string{
 }
 
 func RandomPhoneNumber()string{
-	return fmt.Sprintf("+1%s", strconv.Itoa(int(RandomInt(10,10))))
+	// return fmt.Sprintf("+1%s", strconv.Itoa(int(RandomInt(10,10))))
+	var sb strings.Builder
+	lenth := len(numbers)
+
+	for i:=0; i<10; i++{
+		ranNum := numbers[rand.Intn(lenth)]
+		sb.WriteByte(byte(ranNum))
+	}
+	log.Println(fmt.Sprintf("+1%s", sb.String()))
+	return fmt.Sprintf("+1%s", sb.String()) 
 }
