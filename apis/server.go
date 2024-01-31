@@ -45,9 +45,6 @@ func (server *Server) setUpRouter() {
 	router := gin.Default()
 	router.Use(setTraceId())
 
-	// below routes don't need authentication
-	//router.POST("/user/userLogin", server.loginUser)
-
 	// User related operations(no need for authentication)
 
 	// Post related operations(no need for authentication)
