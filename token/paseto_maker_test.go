@@ -8,8 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-
-func TestPasetoMaker(t *testing.T){
+func TestPasetoMaker(t *testing.T) {
 	maker, err := NewPasetoMaker(utils.RandomStringWithSpecifiedLenth(32))
 	require.NoError(t, err)
 
@@ -28,12 +27,12 @@ func TestPasetoMaker(t *testing.T){
 	require.NotEmpty(t, payload)
 
 	require.NotZero(t, payload.ID)
-	require.Equal(t, username, payload.Username)
+	require.Equal(t, username, payload.Uid)
 	require.WithinDuration(t, issuedAt, payload.IssuedAt, time.Second)
 	require.WithinDuration(t, expiredAt, payload.ExpiredAt, time.Second)
 }
 
-func TestExpiredPasetoToken(t *testing.T){
+func TestExpiredPasetoToken(t *testing.T) {
 	maker, err := NewPasetoMaker(utils.RandomStringWithSpecifiedLenth(32))
 	require.NoError(t, err)
 
