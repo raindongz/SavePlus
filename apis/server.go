@@ -45,22 +45,22 @@ func (server *Server) setUpRouter() {
 	router := gin.Default()
 	router.Use(setTraceId())
 
-	// User related operations(no need for authentication)
+	// todo: User related operations(no need for authentication)
+	router.POST("/user/login", server.userLogin)
 
-	// Post related operations(no need for authentication)
-		//router.POST("/user/login", server.loginUser)
+	// todo: Post related operations(no need for authentication)
+	router.GET("/post/infoNoAuth", server.getPostDetailInfoWithOutAuth)
+	router.GET("/post/getInterestList", server.GetInterestList)
+	router.GET("/post/list", server.getPostList)
 
 	// below routes need authentication
-	//authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
-	router.POST("/post", server.createNewPost)
-	router.GET("/post/list", server.getPostList)
-	router.GET("/post/listInfoNoAuth", server.getPostDetailInfoWithOutAuth)
-	router.GET("/post/listInfoAuth", server.getPostDetailInfoWithAuth)
-	router.POST("/post/update", server.updatePostInfo)
-	router.POST("/post/delete", server.deletePostInfo)
-	router.GET("/post/getInterestList", server.GetInterestList)
-	router.POST("/post/interest", server.InterestPost)
-	router.POST("/post/unInterest", server.UnInterestPost)
+	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
+	authRoutes.POST("/post", server.createNewPost)
+	authRoutes.GET("/post/infoAuth", server.getPostDetailInfoWithAuth)
+	authRoutes.POST("/post/update", server.updatePostInfo)
+	authRoutes.POST("/post/delete", server.deletePostInfo)
+	authRoutes.POST("/post/interest", server.InterestPost)
+	authRoutes.POST("/post/unInterest", server.UnInterestPost)
 	server.router = router
 }
 
