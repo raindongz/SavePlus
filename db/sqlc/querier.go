@@ -9,16 +9,17 @@ import (
 )
 
 type Querier interface {
-	CreateInterestRecord(ctx context.Context, arg CreateInterestRecordParams) (InterestInfo, error)
+	CreateInterestRecord(ctx context.Context, arg CreateInterestRecordParams) error
 	CreateNewPost(ctx context.Context, arg CreateNewPostParams) (PostInfo, error)
 	CreateNewUser(ctx context.Context, arg CreateNewUserParams) (UsersInfo, error)
 	CreateTradingRecord(ctx context.Context, arg CreateTradingRecordParams) (TradingHistory, error)
-	DeleteInterestRecord(ctx context.Context, id int64) error
+	DeleteInterestRecord(ctx context.Context, arg DeleteInterestRecordParams) error
 	DeletePost(ctx context.Context, id int64) error
 	DeleteTradingRecord(ctx context.Context, arg DeleteTradingRecordParams) error
 	DeleteUser(ctx context.Context, id int64) error
-	GetInterestList(ctx context.Context, postID int64) ([]InterestInfo, error)
 	GetPost(ctx context.Context, id int64) (PostInfo, error)
+	GetPostAndRelatedUser(ctx context.Context, id int64) (GetPostAndRelatedUserRow, error)
+	GetPostInterestList(ctx context.Context, postID int64) ([]GetPostInterestListRow, error)
 	GetPostList(ctx context.Context, arg GetPostListParams) ([]PostInfo, error)
 	GetRecord(ctx context.Context, id int64) (TradingHistory, error)
 	GetRecordList(ctx context.Context, arg GetRecordListParams) ([]TradingHistory, error)
