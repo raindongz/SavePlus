@@ -10,23 +10,23 @@ import (
 )
 
 // Server serves all HTTP requests for our SavePlus service
-type Server struct{
-	config utils.Config
-	store db.Store
-	router *gin.Engine
+type Server struct {
+	config     utils.Config
+	store      db.Store
+	router     *gin.Engine
 	tokenMaker token.Maker
 }
 
 // NewServer create a new HTTP server and setup routing.
-func NewServer(config utils.Config, store db.Store) (*Server, error){
+func NewServer(config utils.Config, store db.Store) (*Server, error) {
 	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create token maker: %w", err)
 	}
 
 	server := &Server{
-		config: config,
-		store:  store,
+		config:     config,
+		store:      store,
 		tokenMaker: tokenMaker,
 	}
 
@@ -37,14 +37,16 @@ func NewServer(config utils.Config, store db.Store) (*Server, error){
 
 	server.setUpRouter()
 
-	//add routes to router 
+	//add routes to router
 	return server, nil
 }
 
-func (server *Server) setUpRouter(){
+func (server *Server) setUpRouter() {
 	router := gin.Default()
+	router.Use(setTraceId())
 
 	// below routes don't need authentication
+	//router.POST("/user/userLogin", server.loginUser)
 
 	// User related operations(no need for authentication)
 
@@ -65,8 +67,8 @@ func (server *Server) setUpRouter(){
 	server.router = router
 }
 
-//start runs http server on specified address 
-func (server *Server) Start(address string) error{
+// Start start runs http server on specified address
+func (server *Server) Start(address string) error {
 	return server.router.Run(address)
 }
 
