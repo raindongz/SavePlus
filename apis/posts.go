@@ -631,44 +631,6 @@ func (server *Server) InterestPost(ctx *gin.Context) {
 	}
 }
 
-// type UnInterestPostRequest struct {
-// 	PostId int64 `json:"post_id" binding:"required,min=1"`
-// }
-
-// type UnInterestPostResponse struct {
-// 	Msg string `json:"msg"`
-// }
-
-// func (server *Server) UnInterestPost(ctx *gin.Context) {
-// 	var req InterestPostRequest
-// 	if err := ctx.ShouldBindJSON(&req); err != nil {
-// 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-// 		return
-// 	}
-
-// 	// todo: authenticate user
-
-// 	arg := db.DeleteInterestRecordParams{
-// 		PostID:           req.PostId,
-// 		InterestedUserID: 1, // todo,
-// 	}
-// 	err := server.store.DeleteInterestRecord(ctx, arg)
-
-// 	if err != nil {
-// 		if err == db.ErrUniqueViolation {
-// 			ctx.JSON(http.StatusNotFound, errorResponse(err))
-// 			return
-// 		}
-// 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-// 		return
-// 	}
-
-// 	rsp := InterestPostResponse{
-// 		Msg: "UnInterested",
-// 	}
-// 	ctx.JSON(http.StatusOK, rsp)
-// }
-
 // private method for create new post and update new post response
 // func (server *Server) getUserInfoForCreateAndUpdatePostResponse(ctx *gin.Context, userId int, post db.PostInfo)(CreateOrUpdatePostResponse, error){
 // 	var rsp CreateOrUpdatePostResponse
