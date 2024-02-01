@@ -30,15 +30,28 @@ func (q *Queries) CreateInterestRecord(ctx context.Context, arg CreateInterestRe
 
 const deleteInterestRecord = `-- name: DeleteInterestRecord :exec
 DELETE FROM interest_info
-WHERE post_id = $1 and interested_user_id = $2
+WHERE id = $1
 `
 
-type DeleteInterestRecordParams struct {
+func (q *Queries) DeleteInterestRecord(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, deleteInterestRecord, id)
+	return err
+}
+
+const getInterestRecordByUserIdAndPostId = `-- name: GetInterestRecordByUserIdAndPostId :one
+SELECT id 
+FROM interest_info 
+WHERE post_id = $1 AND interested_user_id = $2 LIMIT 1
+`
+
+type GetInterestRecordByUserIdAndPostIdParams struct {
 	PostID           int64 `json:"post_id"`
 	InterestedUserID int64 `json:"interested_user_id"`
 }
 
-func (q *Queries) DeleteInterestRecord(ctx context.Context, arg DeleteInterestRecordParams) error {
-	_, err := q.db.Exec(ctx, deleteInterestRecord, arg.PostID, arg.InterestedUserID)
-	return err
+func (q *Queries) GetInterestRecordByUserIdAndPostId(ctx context.Context, arg GetInterestRecordByUserIdAndPostIdParams) (int64, error) {
+	row := q.db.QueryRow(ctx, getInterestRecordByUserIdAndPostId, arg.PostID, arg.InterestedUserID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }

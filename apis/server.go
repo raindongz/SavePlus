@@ -30,11 +30,6 @@ func NewServer(config utils.Config, store db.Store) (*Server, error) {
 		tokenMaker: tokenMaker,
 	}
 
-	//register custom validater to gin
-	// if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-	// 	v.RegisterValidation("currency", validateCurrency)
-	// }
-
 	server.setUpRouter()
 
 	//add routes to router
@@ -45,22 +40,24 @@ func (server *Server) setUpRouter() {
 	router := gin.Default()
 	router.Use(setTraceId())
 
-	// todo: User related operations(no need for authentication)
-	router.POST("/user/login", server.userLogin)
-
-	// todo: Post related operations(no need for authentication)
+	// post related route do not need authenticate
 	router.GET("/post/infoNoAuth", server.getPostDetailInfoWithOutAuth)
 	router.GET("/post/getInterestList", server.GetInterestList)
 	router.GET("/post/list", server.getPostList)
 
-	// below routes need authentication
+	// User related operations(Authentication needed)
+	userGroup := router.Group("/user")
+	userGroup.Handle("POST", "/getUserInfo", server.updateUserInfo)
+	userGroup.Handle("POST", "/login", server.userLogin)
+	userGroup.Handle("GET", "/create", server.createUser)
+
+	// Post related operations(Authentication needed)// below routes need authentication
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
 	authRoutes.POST("/post", server.createNewPost)
 	authRoutes.GET("/post/infoAuth", server.getPostDetailInfoWithAuth)
 	authRoutes.POST("/post/update", server.updatePostInfo)
 	authRoutes.POST("/post/delete", server.deletePostInfo)
 	authRoutes.POST("/post/interest", server.InterestPost)
-	authRoutes.POST("/post/unInterest", server.UnInterestPost)
 	server.router = router
 }
 

@@ -13,10 +13,11 @@ type Querier interface {
 	CreateNewPost(ctx context.Context, arg CreateNewPostParams) (PostInfo, error)
 	CreateNewUser(ctx context.Context, arg CreateNewUserParams) (UsersInfo, error)
 	CreateTradingRecord(ctx context.Context, arg CreateTradingRecordParams) (TradingHistory, error)
-	DeleteInterestRecord(ctx context.Context, arg DeleteInterestRecordParams) error
+	DeleteInterestRecord(ctx context.Context, id int64) error
 	DeletePost(ctx context.Context, id int64) error
 	DeleteTradingRecord(ctx context.Context, arg DeleteTradingRecordParams) error
 	DeleteUser(ctx context.Context, id int64) error
+	GetInterestRecordByUserIdAndPostId(ctx context.Context, arg GetInterestRecordByUserIdAndPostIdParams) (int64, error)
 	GetPost(ctx context.Context, id int64) (PostInfo, error)
 	GetPostAndRelatedUser(ctx context.Context, id int64) (GetPostAndRelatedUserRow, error)
 	GetPostInterestList(ctx context.Context, postID int64) ([]GetPostInterestListRow, error)

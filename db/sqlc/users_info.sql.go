@@ -103,7 +103,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (UsersInfo, 
 
 const getUserById = `-- name: GetUserById :one
 SELECT id, username, hashed_password, full_name, email, phone, gender, avatar, deleted_flag, password_changed_at, created_at, updated_at FROM users_info 
-WHERE id = $1 LIMIT 1
+WHERE id = $1 and deleted_flag = 0 LIMIT 1
 `
 
 func (q *Queries) GetUserById(ctx context.Context, id int64) (UsersInfo, error) {

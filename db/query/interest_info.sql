@@ -7,7 +7,13 @@ INSERT INTO interest_info (
   $1, $2
 );
 
+-- name: GetInterestRecordByUserIdAndPostId :one
+SELECT id 
+FROM interest_info 
+WHERE post_id = $1 AND interested_user_id = $2 LIMIT 1;
+
+
 -- name: DeleteInterestRecord :exec
 DELETE FROM interest_info
-WHERE post_id = $1 and interested_user_id = $2;
+WHERE id = $1;
 
