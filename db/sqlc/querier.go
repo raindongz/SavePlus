@@ -21,6 +21,7 @@ type Querier interface {
 	GetInterestListByUserID(ctx context.Context, interestedUserID int64) ([]GetInterestListByUserIDRow, error)
 	GetPost(ctx context.Context, id int64) (PostInfo, error)
 	GetPostList(ctx context.Context, arg GetPostListParams) ([]PostInfo, error)
+	GetPurchaseByUserId(ctx context.Context, soldToUserID int64) ([]GetPurchaseByUserIdRow, error)
 	GetRecord(ctx context.Context, id int64) (TradingHistory, error)
 	GetRecordList(ctx context.Context, arg GetRecordListParams) ([]TradingHistory, error)
 	GetUserByEmail(ctx context.Context, email string) (UsersInfo, error)

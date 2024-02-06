@@ -20,35 +20,25 @@ type viewMyInterestRsp struct {
 	Items  []InterestItem `json:"items,omitempty"`
 	Detail string         `json:"detail,omitempty"`
 }
+
 type InterestItem struct {
 	PostId  int64  `json:"postId"`
 	Status  int16  `json:"status"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
+	Price   string `json:"price"`
 }
 
 func (server *Server) viewMyInterestList(ctx *gin.Context) {
 	req := new(viewMyInterestReq)
 
-	v, ok := ctx.Get(authorizationPayloadKey)
-	if !ok {
-		log.WarnWithCtxFields(ctx, "no id in token")
+	userId, err := getUserIdFromCtx(ctx)
+	if err != nil {
+		log.ErrorWithCtxFields(ctx, "get user id from ctx failed", zap.Error(err))
 		ctx.Status(http.StatusBadRequest)
 		return
 	}
-	if payload, is := v.(*token.Payload); !is {
-		log.WarnWithCtxFields(ctx, "unexpected payload in auth key")
-		ctx.Status(http.StatusBadRequest)
-		return
-	} else {
-		uid, err := strconv.Atoi(payload.Uid)
-		if err != nil {
-			log.WarnWithCtxFields(ctx, "unexpected payload in auth key")
-			ctx.Status(http.StatusBadRequest)
-			return
-		}
-		req.userID = int64(uid)
-	}
+	req.userID = userId
 
 	rsp := new(viewMyInterestRsp)
 	statusCode, err := server.doViewMyInterestList(ctx, req, rsp)
@@ -57,6 +47,26 @@ func (server *Server) viewMyInterestList(ctx *gin.Context) {
 		rsp.Detail = err.Error()
 	}
 	ctx.JSON(statusCode, rsp)
+}
+
+func getUserIdFromCtx(ctx *gin.Context) (int64, error) {
+	v, ok := ctx.Get(authorizationPayloadKey)
+	if !ok {
+		log.WarnWithCtxFields(ctx, "no id in token")
+
+		return 0, errors.New("no id in token")
+	}
+	if payload, is := v.(*token.Payload); !is {
+		log.WarnWithCtxFields(ctx, "unexpected payload in auth key")
+		return 0, errors.New("unexpected payload in auth key")
+	} else {
+		uid, err := strconv.Atoi(payload.Uid)
+		if err != nil {
+			log.WarnWithCtxFields(ctx, "unexpected payload in auth key")
+			return 0, errors.New("unexpected payload in auth key")
+		}
+		return int64(uid), nil
+	}
 }
 
 func (server *Server) doViewMyInterestList(ctx context.Context,

@@ -65,6 +65,7 @@ func (server *Server) setUpRouter() {
 	userGroup.Handle("post", "/getUserInfo", server.updateUserInfo)
 	userGroup.Handle("post", "/login", server.userLogin)
 	userGroup.Handle("get", "/create", server.createUser)
+	userGroup.Handle("get", "/viewMyPurchaseHistory", server.viewMyPurchaseHistory)
 	server.router = router
 }
 
