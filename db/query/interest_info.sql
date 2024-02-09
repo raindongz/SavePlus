@@ -17,3 +17,9 @@ WHERE post_id = $1 AND interested_user_id = $2 LIMIT 1;
 DELETE FROM interest_info
 WHERE id = $1;
 
+-- name: GetInterestListByUserID :many
+SELECT i.*,p.* FROM interest_info as i
+JOIN post_info as p
+ON i.interested_user_id == post_info.post_user_id
+WHERE interested_user_id = $1 ;
+

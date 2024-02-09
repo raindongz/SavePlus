@@ -47,6 +47,8 @@ func (server *Server) setUpRouter() {
 
 	// User related operations(Authentication needed)
 	userGroup := router.Group("/user")
+
+	userGroup.Handle("GET", "/viewMyPurchaseHistory", server.viewMyPurchaseHistory)
 	userGroup.Handle("POST", "/getUserInfo", server.updateUserInfo)
 	userGroup.Handle("POST", "/login", server.userLogin)
 	userGroup.Handle("GET", "/create", server.createUser)
