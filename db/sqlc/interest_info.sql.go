@@ -40,24 +40,6 @@ func (q *Queries) DeleteInterestRecord(ctx context.Context, id int64) error {
 	return err
 }
 
-const getInterestRecordByUserIdAndPostId = `-- name: GetInterestRecordByUserIdAndPostId :one
-SELECT id 
-FROM interest_info 
-WHERE post_id = $1 AND interested_user_id = $2 LIMIT 1
-`
-
-type GetInterestRecordByUserIdAndPostIdParams struct {
-	PostID           int64 `json:"post_id"`
-	InterestedUserID int64 `json:"interested_user_id"`
-}
-
-func (q *Queries) GetInterestRecordByUserIdAndPostId(ctx context.Context, arg GetInterestRecordByUserIdAndPostIdParams) (int64, error) {
-	row := q.db.QueryRow(ctx, getInterestRecordByUserIdAndPostId, arg.PostID, arg.InterestedUserID)
-	var id int64
-	err := row.Scan(&id)
-	return id, err
-}
-
 const getInterestListByUserID = `-- name: GetInterestListByUserID :many
 SELECT i.id, i.post_id, i.interested_user_id, i.created_at, i.updated_at,p.id, p.title, p.content, p.total_price, p.post_user_id, p.delivery_type, p.area, p.item_num, p.post_status, p.negotiable, p.images, p.deleted_flag, p.created_at, p.updated_at FROM interest_info as i
 JOIN post_info as p
@@ -125,4 +107,22 @@ func (q *Queries) GetInterestListByUserID(ctx context.Context, interestedUserID 
 		return nil, err
 	}
 	return items, nil
+}
+
+const getInterestRecordByUserIdAndPostId = `-- name: GetInterestRecordByUserIdAndPostId :one
+SELECT id 
+FROM interest_info 
+WHERE post_id = $1 AND interested_user_id = $2 LIMIT 1
+`
+
+type GetInterestRecordByUserIdAndPostIdParams struct {
+	PostID           int64 `json:"post_id"`
+	InterestedUserID int64 `json:"interested_user_id"`
+}
+
+func (q *Queries) GetInterestRecordByUserIdAndPostId(ctx context.Context, arg GetInterestRecordByUserIdAndPostIdParams) (int64, error) {
+	row := q.db.QueryRow(ctx, getInterestRecordByUserIdAndPostId, arg.PostID, arg.InterestedUserID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
