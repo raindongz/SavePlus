@@ -4,7 +4,9 @@ go 1.21.5
 
 require (
 	github.com/jackc/pgx/v5 v5.5.2
+	github.com/nioliu/commons v0.0.0-20240110031527-1c3b260d500a
 	github.com/spf13/viper v1.18.2
+	go.uber.org/zap v1.26.0
 )
 
 require (
@@ -15,11 +17,9 @@ require (
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.2 // indirect
 	github.com/klauspost/compress v1.17.5 // indirect
-	github.com/nioliu/commons v0.0.0-20240110031527-1c3b260d500a // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/segmentio/kafka-go v0.4.47 // indirect
-	go.uber.org/zap v1.26.0 // indirect
 	google.golang.org/grpc v1.61.0 // indirect
 )
 
@@ -64,7 +64,6 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
-	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.7.0 // indirect
 	golang.org/x/crypto v0.18.0

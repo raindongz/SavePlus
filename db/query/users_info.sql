@@ -14,7 +14,7 @@ INSERT INTO users_info (
 
 -- name: GetUserById :one
 SELECT * FROM users_info 
-WHERE id = $1 LIMIT 1;
+WHERE id = $1 and deleted_flag = 0 LIMIT 1;
 
 -- name: GetUserByEmail :one
 SELECT * FROM users_info

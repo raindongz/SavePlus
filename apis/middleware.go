@@ -3,9 +3,10 @@ package apis
 import (
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
 	"net/http"
 	"strings"
+
+	"github.com/google/uuid"
 
 	"github.com/gin-gonic/gin"
 	"github.com/randongz/save_plus/token"
@@ -17,6 +18,10 @@ const (
 	authorizationPayloadKey = "authorization_payload"
 )
 
+// authentication middleware
+// 1. get request header.
+// 2. check if informations in header are correct.
+// 3. verify token, pass it to router.
 func authMiddleware(tokenMaker token.Maker) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authorizationHeader := ctx.GetHeader(authorizationHeaderKey)

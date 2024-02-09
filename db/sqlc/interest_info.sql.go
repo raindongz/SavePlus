@@ -11,13 +11,13 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createInterestRecord = `-- name: CreateInterestRecord :one
+const createInterestRecord = `-- name: CreateInterestRecord :exec
 INSERT INTO interest_info (
   post_id,
   interested_user_id
 ) VALUES (
   $1, $2
-) RETURNING id, post_id, interested_user_id, created_at, updated_at
+)
 `
 
 type CreateInterestRecordParams struct {
@@ -25,17 +25,9 @@ type CreateInterestRecordParams struct {
 	InterestedUserID int64 `json:"interested_user_id"`
 }
 
-func (q *Queries) CreateInterestRecord(ctx context.Context, arg CreateInterestRecordParams) (InterestInfo, error) {
-	row := q.db.QueryRow(ctx, createInterestRecord, arg.PostID, arg.InterestedUserID)
-	var i InterestInfo
-	err := row.Scan(
-		&i.ID,
-		&i.PostID,
-		&i.InterestedUserID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+func (q *Queries) CreateInterestRecord(ctx context.Context, arg CreateInterestRecordParams) error {
+	_, err := q.db.Exec(ctx, createInterestRecord, arg.PostID, arg.InterestedUserID)
+	return err
 }
 
 const deleteInterestRecord = `-- name: DeleteInterestRecord :exec
@@ -48,35 +40,22 @@ func (q *Queries) DeleteInterestRecord(ctx context.Context, id int64) error {
 	return err
 }
 
-const getInterestList = `-- name: GetInterestList :many
-SELECT id, post_id, interested_user_id, created_at, updated_at FROM interest_info 
-WHERE post_id = $1
+const getInterestRecordByUserIdAndPostId = `-- name: GetInterestRecordByUserIdAndPostId :one
+SELECT id 
+FROM interest_info 
+WHERE post_id = $1 AND interested_user_id = $2 LIMIT 1
 `
 
-func (q *Queries) GetInterestList(ctx context.Context, postID int64) ([]InterestInfo, error) {
-	rows, err := q.db.Query(ctx, getInterestList, postID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []InterestInfo{}
-	for rows.Next() {
-		var i InterestInfo
-		if err := rows.Scan(
-			&i.ID,
-			&i.PostID,
-			&i.InterestedUserID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+type GetInterestRecordByUserIdAndPostIdParams struct {
+	PostID           int64 `json:"post_id"`
+	InterestedUserID int64 `json:"interested_user_id"`
+}
+
+func (q *Queries) GetInterestRecordByUserIdAndPostId(ctx context.Context, arg GetInterestRecordByUserIdAndPostIdParams) (int64, error) {
+	row := q.db.QueryRow(ctx, getInterestRecordByUserIdAndPostId, arg.PostID, arg.InterestedUserID)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
 
 const getInterestListByUserID = `-- name: GetInterestListByUserID :many
