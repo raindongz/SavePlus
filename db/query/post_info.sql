@@ -16,8 +16,33 @@ deleted_flag
 ) RETURNING *;
 
 -- name: GetPost :one
-SELECT * FROM post_info 
-WHERE id = $1 LIMIT 1;
+SELECT * FROM post_info
+WHERE id = $1 and deleted_flag = 0 LIMIT 1;
+
+-- name: GetPostAndRelatedUser :one
+SELECT
+pi.id as postId,
+pi.title ,
+pi.content,
+pi.total_price,
+pi.post_user_id,
+pi.delivery_type,
+pi.area,
+pi.item_num,
+pi.post_status,
+pi.negotiable,
+pi.images,
+pi.created_at,
+pi.updated_at,
+
+ui.id as user_id,
+ui.full_name,
+ui.email,
+ui.phone,
+ui.gender,
+ui.avatar
+from post_info pi left join users_info ui on pi.post_user_id = ui.id
+WHERE pi.id = $1 and pi.deleted_flag = 0 and ui.deleted_flag = 0;
 
 -- name: GetPostList :many
 SELECT * FROM post_info
@@ -27,20 +52,29 @@ ORDER BY updated_at desc
 LIMIT $1
 OFFSET $2;
 
+-- name: GetPostInterestList :many
+select
+ii.id as record_id,
+ui.id as user_id,
+ui.username,
+ui.avatar,
+ui.gender
+from interest_info ii left join users_info ui on ii.interested_user_id = ui.id
+where ii.post_id = $1 and ui.deleted_flag = 0;
+
 -- name: UpdatePost :one
 UPDATE post_info
 SET 
 title = $2,
 content = $3,
 total_price = $4,
-post_user_id = $5,
-delivery_type = $6,
-area = $7,
-item_num = $8,
-post_status = $9,
-negotiable = $10,
-images = $11
-WHERE id = $1
+delivery_type = $5,
+area = $6,
+item_num = $7,
+post_status = $8,
+negotiable = $9,
+images = $10
+WHERE id = $1 and deleted_flag = 0
 RETURNING *;
 
 -- name: DeletePost :exec

@@ -88,8 +88,8 @@ func (q *Queries) DeletePost(ctx context.Context, id int64) error {
 }
 
 const getPost = `-- name: GetPost :one
-SELECT id, title, content, total_price, post_user_id, delivery_type, area, item_num, post_status, negotiable, images, deleted_flag, created_at, updated_at FROM post_info 
-WHERE id = $1 LIMIT 1
+SELECT id, title, content, total_price, post_user_id, delivery_type, area, item_num, post_status, negotiable, images, deleted_flag, created_at, updated_at FROM post_info
+WHERE id = $1 and deleted_flag = 0 LIMIT 1
 `
 
 func (q *Queries) GetPost(ctx context.Context, id int64) (PostInfo, error) {
@@ -112,6 +112,126 @@ func (q *Queries) GetPost(ctx context.Context, id int64) (PostInfo, error) {
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getPostAndRelatedUser = `-- name: GetPostAndRelatedUser :one
+SELECT
+pi.id as postId,
+pi.title ,
+pi.content,
+pi.total_price,
+pi.post_user_id,
+pi.delivery_type,
+pi.area,
+pi.item_num,
+pi.post_status,
+pi.negotiable,
+pi.images,
+pi.created_at,
+pi.updated_at,
+
+ui.id as user_id,
+ui.full_name,
+ui.email,
+ui.phone,
+ui.gender,
+ui.avatar
+from post_info pi left join users_info ui on pi.post_user_id = ui.id
+WHERE pi.id = $1 and pi.deleted_flag = 0 and ui.deleted_flag = 0
+`
+
+type GetPostAndRelatedUserRow struct {
+	Postid       int64       `json:"postid"`
+	Title        string      `json:"title"`
+	Content      string      `json:"content"`
+	TotalPrice   string      `json:"total_price"`
+	PostUserID   int64       `json:"post_user_id"`
+	DeliveryType int16       `json:"delivery_type"`
+	Area         pgtype.Text `json:"area"`
+	ItemNum      int32       `json:"item_num"`
+	PostStatus   int16       `json:"post_status"`
+	Negotiable   int16       `json:"negotiable"`
+	Images       string      `json:"images"`
+	CreatedAt    pgtype.Date `json:"created_at"`
+	UpdatedAt    pgtype.Date `json:"updated_at"`
+	UserID       pgtype.Int8 `json:"user_id"`
+	FullName     pgtype.Text `json:"full_name"`
+	Email        pgtype.Text `json:"email"`
+	Phone        pgtype.Text `json:"phone"`
+	Gender       pgtype.Int2 `json:"gender"`
+	Avatar       pgtype.Text `json:"avatar"`
+}
+
+func (q *Queries) GetPostAndRelatedUser(ctx context.Context, id int64) (GetPostAndRelatedUserRow, error) {
+	row := q.db.QueryRow(ctx, getPostAndRelatedUser, id)
+	var i GetPostAndRelatedUserRow
+	err := row.Scan(
+		&i.Postid,
+		&i.Title,
+		&i.Content,
+		&i.TotalPrice,
+		&i.PostUserID,
+		&i.DeliveryType,
+		&i.Area,
+		&i.ItemNum,
+		&i.PostStatus,
+		&i.Negotiable,
+		&i.Images,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.UserID,
+		&i.FullName,
+		&i.Email,
+		&i.Phone,
+		&i.Gender,
+		&i.Avatar,
+	)
+	return i, err
+}
+
+const getPostInterestList = `-- name: GetPostInterestList :many
+select
+ii.id as record_id,
+ui.id as user_id,
+ui.username,
+ui.avatar,
+ui.gender
+from interest_info ii left join users_info ui on ii.interested_user_id = ui.id
+where ii.post_id = $1 and ui.deleted_flag = 0
+`
+
+type GetPostInterestListRow struct {
+	RecordID int64       `json:"record_id"`
+	UserID   pgtype.Int8 `json:"user_id"`
+	Username pgtype.Text `json:"username"`
+	Avatar   pgtype.Text `json:"avatar"`
+	Gender   pgtype.Int2 `json:"gender"`
+}
+
+func (q *Queries) GetPostInterestList(ctx context.Context, postID int64) ([]GetPostInterestListRow, error) {
+	rows, err := q.db.Query(ctx, getPostInterestList, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPostInterestListRow{}
+	for rows.Next() {
+		var i GetPostInterestListRow
+		if err := rows.Scan(
+			&i.RecordID,
+			&i.UserID,
+			&i.Username,
+			&i.Avatar,
+			&i.Gender,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getPostList = `-- name: GetPostList :many
@@ -169,14 +289,13 @@ SET
 title = $2,
 content = $3,
 total_price = $4,
-post_user_id = $5,
-delivery_type = $6,
-area = $7,
-item_num = $8,
-post_status = $9,
-negotiable = $10,
-images = $11
-WHERE id = $1
+delivery_type = $5,
+area = $6,
+item_num = $7,
+post_status = $8,
+negotiable = $9,
+images = $10
+WHERE id = $1 and deleted_flag = 0
 RETURNING id, title, content, total_price, post_user_id, delivery_type, area, item_num, post_status, negotiable, images, deleted_flag, created_at, updated_at
 `
 
@@ -185,7 +304,6 @@ type UpdatePostParams struct {
 	Title        string      `json:"title"`
 	Content      string      `json:"content"`
 	TotalPrice   string      `json:"total_price"`
-	PostUserID   int64       `json:"post_user_id"`
 	DeliveryType int16       `json:"delivery_type"`
 	Area         pgtype.Text `json:"area"`
 	ItemNum      int32       `json:"item_num"`
@@ -200,7 +318,6 @@ func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (PostInf
 		arg.Title,
 		arg.Content,
 		arg.TotalPrice,
-		arg.PostUserID,
 		arg.DeliveryType,
 		arg.Area,
 		arg.ItemNum,
