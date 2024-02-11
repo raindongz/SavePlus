@@ -15,8 +15,9 @@ COPY --from=builder /app/migrate ./migrate
 COPY app.env .
 COPY start.sh .
 COPY db/migration ./migration
+RUN apk update && apk add tzdata
 
-EXPOSE 8080
+EXPOSE 80
 # below line will be overrided if docker compose file have entrypoint
 CMD ["/app/main"]
 ENTRYPOINT [ "/app/start.sh" ]
