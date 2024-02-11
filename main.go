@@ -10,9 +10,9 @@ import (
 	"github.com/randongz/save_plus/utils"
 )
 
-func main(){
+func main() {
 
-	config, err := utils.LoadConfig(".")// current folder. main and app.env are in the same folder
+	config, err := utils.LoadConfig(".") // current folder. main and app.env are in the same folder
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}

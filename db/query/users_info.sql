@@ -12,9 +12,13 @@ INSERT INTO users_info (
   $1, $2, $3, $4, $5, $6, $7, 0
 ) RETURNING *;
 
--- name: GetUser :one
+-- name: GetUserById :one
 SELECT * FROM users_info 
-WHERE id = $1 LIMIT 1;
+WHERE id = $1 and deleted_flag = 0 LIMIT 1;
+
+-- name: GetUserByEmail :one
+SELECT * FROM users_info
+WHERE email = $1 LIMIT 1;
 
 -- name: UpdateUserInfo :one
 UPDATE users_info
