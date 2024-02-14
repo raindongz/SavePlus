@@ -3,6 +3,7 @@ package apis
 import (
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	db "github.com/randongz/save_plus/db/sqlc"
 	"github.com/randongz/save_plus/token"
@@ -39,6 +40,7 @@ func NewServer(config utils.Config, store db.Store) (*Server, error) {
 func (server *Server) setUpRouter() {
 	router := gin.Default()
 	router.Use(setTraceId())
+	router.Use(cors.Default())
 
 	// post related route do not need authenticate
 	router.GET("/post/infoNoAuth", server.getPostDetailInfoWithOutAuth)
