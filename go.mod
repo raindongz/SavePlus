@@ -3,6 +3,7 @@ module github.com/randongz/save_plus
 go 1.21.5
 
 require (
+	github.com/gin-contrib/cors v1.5.0
 	github.com/jackc/pgx/v5 v5.5.2
 	github.com/nioliu/commons v0.0.0-20240110031527-1c3b260d500a
 	github.com/spf13/viper v1.18.2

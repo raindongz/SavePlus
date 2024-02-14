@@ -17,7 +17,7 @@ COPY start.sh .
 COPY db/migration ./migration
 RUN apk update && apk add tzdata
 
-EXPOSE 10086
+EXPOSE 8080
 # below line will be overrided if docker compose file have entrypoint
 CMD ["/app/main"]
 ENTRYPOINT [ "/app/start.sh" ]
