@@ -40,7 +40,13 @@ func NewServer(config utils.Config, store db.Store) (*Server, error) {
 func (server *Server) setUpRouter() {
 	router := gin.Default()
 	router.Use(setTraceId())
-	router.Use(cors.Default())
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"POST", "GET", "OPTIONS"},
+		AllowHeaders:     []string{"Authorization"},
+		AllowCredentials: true,
+	}))
 
 	// post related route do not need authenticate
 	router.GET("/post/infoNoAuth", server.getPostDetailInfoWithOutAuth)
