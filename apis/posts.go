@@ -390,7 +390,7 @@ func (server *Server) updatePostInfo(ctx *gin.Context) {
 		return
 	}
 
-	// 1. todo: authorization. get user id from payload,
+	// 1. authorization. get user id from payload,
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	userId, err := strconv.Atoi(authPayload.Uid)
 	if err != nil {
