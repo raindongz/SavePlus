@@ -27,8 +27,7 @@ SET
   full_name = $3,
   email = $4,
   phone = $5,
-  gender = $6,
-  avatar = $7
+  avatar = $6
 WHERE id = $1
 RETURNING *;
 

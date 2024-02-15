@@ -133,8 +133,7 @@ SET
   full_name = $3,
   email = $4,
   phone = $5,
-  gender = $6,
-  avatar = $7
+  avatar = $6
 WHERE id = $1
 RETURNING id, username, hashed_password, full_name, email, phone, gender, avatar, deleted_flag, password_changed_at, created_at, updated_at
 `
@@ -145,7 +144,6 @@ type UpdateUserInfoParams struct {
 	FullName string      `json:"full_name"`
 	Email    string      `json:"email"`
 	Phone    pgtype.Text `json:"phone"`
-	Gender   int16       `json:"gender"`
 	Avatar   pgtype.Text `json:"avatar"`
 }
 
@@ -156,7 +154,6 @@ func (q *Queries) UpdateUserInfo(ctx context.Context, arg UpdateUserInfoParams) 
 		arg.FullName,
 		arg.Email,
 		arg.Phone,
-		arg.Gender,
 		arg.Avatar,
 	)
 	var i UsersInfo
