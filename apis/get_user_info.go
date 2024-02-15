@@ -21,7 +21,7 @@ type getUserInfoRsp struct {
 	Details  string        `json:"details,omitempty"`
 }
 
-func (server *Server) updateUserInfo(ctx *gin.Context) {
+func (server *Server) getUserInfo(ctx *gin.Context) {
 	req := new(getUserInfoReq)
 	v, ok := ctx.Get(authorizationPayloadKey)
 	if !ok {

@@ -51,12 +51,13 @@ func (server *Server) setUpRouter() {
 	userGroup := router.Group("/user")
 
 	userGroup.Handle("GET", "/viewMyPurchaseHistory", server.viewMyPurchaseHistory)
-	userGroup.Handle("POST", "/getUserInfo", server.updateUserInfo)
 	userGroup.Handle("POST", "/login", server.userLogin)
 	userGroup.Handle("POST", "/create", server.createUser)
 
 	// Post related operations(Authentication needed)// below routes need authentication
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
+	authRoutes.POST("/user/getUserInfo", server.getUserInfo)
+	authRoutes.POST("/user/updateUserInfo", server.updateUserInfo)
 	authRoutes.POST("/post", server.createNewPost)
 	authRoutes.GET("/post/infoAuth", server.getPostDetailInfoWithAuth)
 	authRoutes.POST("/post/update", server.updatePostInfo)
