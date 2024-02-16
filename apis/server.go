@@ -44,7 +44,7 @@ func (server *Server) setUpRouter() {
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"POST", "GET", "OPTIONS"},
-		AllowHeaders:     []string{"Authorization", "Content-Type"},
+		AllowHeaders:     []string{"Authorization", "Content-Type", "X-Trace-Id"},
 		AllowCredentials: true,
 	}))
 
