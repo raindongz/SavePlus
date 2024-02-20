@@ -41,9 +41,9 @@ func (q *Queries) DeleteInterestRecord(ctx context.Context, id int64) error {
 }
 
 const getInterestListByUserID = `-- name: GetInterestListByUserID :many
-SELECT i.id, i.post_id, i.interested_user_id, i.created_at, i.updated_at,p.id, p.title, p.content, p.total_price, p.post_user_id, p.delivery_type, p.area, p.item_num, p.post_status, p.negotiable, p.images, p.deleted_flag, p.created_at, p.updated_at FROM interest_info as i
-JOIN post_info as p
-ON i.interested_user_id == post_info.post_user_id
+SELECT i.id, i.post_id, i.interested_user_id, i.created_at, i.updated_at,p.id, p.title, p.content, p.total_price, p.post_user_id, p.delivery_type, p.area, p.item_num, p.post_status, p.negotiable, p.images, p.deleted_flag, p.created_at, p.updated_at FROM interest_info i
+JOIN post_info p
+ON i.interested_user_id = p.post_user_id
 WHERE interested_user_id = $1
 `
 
@@ -57,7 +57,7 @@ type GetInterestListByUserIDRow struct {
 	Title            string      `json:"title"`
 	Content          string      `json:"content"`
 	TotalPrice       string      `json:"total_price"`
-	PostUserID       pgtype.Int8 `json:"post_user_id"`
+	PostUserID       int64       `json:"post_user_id"`
 	DeliveryType     int16       `json:"delivery_type"`
 	Area             pgtype.Text `json:"area"`
 	ItemNum          int32       `json:"item_num"`

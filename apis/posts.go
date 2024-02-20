@@ -70,6 +70,7 @@ func (server *Server) createNewPost(ctx *gin.Context) {
 		Title:        req.Title,
 		Content:      req.Content,
 		TotalPrice:   req.TotalPrice,
+		PostUserID:   int64(userId),
 		DeliveryType: *req.DeliveryType,
 		Area: pgtype.Text{
 			String: req.Area,
@@ -109,7 +110,7 @@ func (server *Server) createNewPost(ctx *gin.Context) {
 	// 4. put user info in response alone with post info just created
 	rsp := CreateNewPostResponse{
 		PostId:       post.ID,
-		PostUserID:   user.ID,
+		PostUserID:   post.PostUserID,
 		Title:        post.Title,
 		Content:      post.Content,
 		TotalPrice:   post.TotalPrice,
@@ -323,7 +324,7 @@ func (server *Server) getPostDetailInfoWithAuth(ctx *gin.Context) {
 		Content:      postWithUserDetail.Content,
 		TotalPrice:   postWithUserDetail.TotalPrice,
 		DeliveryType: postWithUserDetail.DeliveryType,
-		PostUserID:   postWithUserDetail.PostUserID.Int64,
+		PostUserID:   postWithUserDetail.PostUserID,
 		Area:         postWithUserDetail.Area.String,
 		ItemNum:      postWithUserDetail.ItemNum,
 		PostStatus:   postWithUserDetail.PostStatus,
@@ -410,7 +411,7 @@ func (server *Server) updatePostInfo(ctx *gin.Context) {
 	}
 
 	// 3. check if post belone to authenticated user
-	if postInfo.PostUserID.Int64 != int64(userId) {
+	if postInfo.PostUserID != int64(userId) {
 		log.ErrorWithCtxFields(ctx, "unauthorized request:", zap.Error(errors.New("unauthorized request")))
 		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized request")))
 		return
@@ -512,7 +513,7 @@ func (server *Server) deletePostInfo(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, errorResponse(err))
 		return
 	}
-	if postInfo.PostUserID.Int64 != int64(userId) {
+	if postInfo.PostUserID != int64(userId) {
 		log.ErrorWithCtxFields(ctx, "unauthorized request", zap.Error(err))
 		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
 		return
