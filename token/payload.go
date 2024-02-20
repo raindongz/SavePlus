@@ -2,7 +2,6 @@ package token
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
