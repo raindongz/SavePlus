@@ -1,2 +1,0 @@
-ALTER TABLE post_info
-ALTER COLUMN post_user_id DROP NOT NULL;
