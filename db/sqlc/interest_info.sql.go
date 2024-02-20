@@ -126,3 +126,42 @@ func (q *Queries) GetInterestRecordByUserIdAndPostId(ctx context.Context, arg Ge
 	err := row.Scan(&id)
 	return id, err
 }
+
+const getMyPostList = `-- name: GetMyPostList :many
+SELECT id, title, content, total_price, post_user_id, delivery_type, area, item_num, post_status, negotiable, images, deleted_flag, created_at, updated_at FROM post_info p where p.post_user_id = $1
+`
+
+func (q *Queries) GetMyPostList(ctx context.Context, postUserID int64) ([]PostInfo, error) {
+	rows, err := q.db.Query(ctx, getMyPostList, postUserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PostInfo{}
+	for rows.Next() {
+		var i PostInfo
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Content,
+			&i.TotalPrice,
+			&i.PostUserID,
+			&i.DeliveryType,
+			&i.Area,
+			&i.ItemNum,
+			&i.PostStatus,
+			&i.Negotiable,
+			&i.Images,
+			&i.DeletedFlag,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
