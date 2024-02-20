@@ -16,7 +16,6 @@ INSERT INTO post_info (
 title,
 content,
 total_price,
-post_user_id,
 delivery_type,
 area,
 item_num,
@@ -25,7 +24,7 @@ negotiable,
 images,
 deleted_flag
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 0
+  $1, $2, $3, $4, $5, $6, $7, $8, $9, 0
 ) RETURNING id, title, content, total_price, post_user_id, delivery_type, area, item_num, post_status, negotiable, images, deleted_flag, created_at, updated_at
 `
 
@@ -33,7 +32,6 @@ type CreateNewPostParams struct {
 	Title        string      `json:"title"`
 	Content      string      `json:"content"`
 	TotalPrice   string      `json:"total_price"`
-	PostUserID   int64       `json:"post_user_id"`
 	DeliveryType int16       `json:"delivery_type"`
 	Area         pgtype.Text `json:"area"`
 	ItemNum      int32       `json:"item_num"`
@@ -47,7 +45,6 @@ func (q *Queries) CreateNewPost(ctx context.Context, arg CreateNewPostParams) (P
 		arg.Title,
 		arg.Content,
 		arg.TotalPrice,
-		arg.PostUserID,
 		arg.DeliveryType,
 		arg.Area,
 		arg.ItemNum,
@@ -145,7 +142,7 @@ type GetPostAndRelatedUserRow struct {
 	Title        string      `json:"title"`
 	Content      string      `json:"content"`
 	TotalPrice   string      `json:"total_price"`
-	PostUserID   int64       `json:"post_user_id"`
+	PostUserID   pgtype.Int8 `json:"post_user_id"`
 	DeliveryType int16       `json:"delivery_type"`
 	Area         pgtype.Text `json:"area"`
 	ItemNum      int32       `json:"item_num"`

@@ -57,7 +57,7 @@ type GetInterestListByUserIDRow struct {
 	Title            string      `json:"title"`
 	Content          string      `json:"content"`
 	TotalPrice       string      `json:"total_price"`
-	PostUserID       int64       `json:"post_user_id"`
+	PostUserID       pgtype.Int8 `json:"post_user_id"`
 	DeliveryType     int16       `json:"delivery_type"`
 	Area             pgtype.Text `json:"area"`
 	ItemNum          int32       `json:"item_num"`
