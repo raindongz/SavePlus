@@ -27,7 +27,7 @@ type PostInfo struct {
 	// post price, accurate to cent
 	TotalPrice string `json:"total_price"`
 	// user who posted this post
-	PostUserID pgtype.Int8 `json:"post_user_id"`
+	PostUserID int64 `json:"post_user_id"`
 	// 0: pick up. 1: mail
 	DeliveryType int16 `json:"delivery_type"`
 	// the area that the seller wants to trade

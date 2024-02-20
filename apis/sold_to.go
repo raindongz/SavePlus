@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/nioliu/commons/log"
 	db "github.com/randongz/save_plus/db/sqlc"
 	"go.uber.org/zap"
-	"net/http"
 )
 
 type soldToReq struct {
@@ -45,7 +46,7 @@ func (server *Server) doSoldTo(ctx context.Context, req *soldToReq) (int, error)
 	}
 	if postInfo.PostStatus != 0 {
 		log.ErrorWithCtxFields(ctx, "current post info is inactive",
-			zap.Int64("post_id", postInfo.PostUserID.Int64))
+			zap.Int64("post_id", postInfo.PostUserID))
 		return http.StatusBadRequest, errors.New("current post info is inactive")
 	}
 
