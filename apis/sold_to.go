@@ -45,7 +45,7 @@ func (server *Server) doSoldTo(ctx context.Context, req *soldToReq) (int, error)
 	}
 	if postInfo.PostStatus != 0 {
 		log.ErrorWithCtxFields(ctx, "current post info is inactive",
-			zap.Int64("post_id", postInfo.PostUserID))
+			zap.Int64("post_id", postInfo.PostUserID.Int64))
 		return http.StatusBadRequest, errors.New("current post info is inactive")
 	}
 

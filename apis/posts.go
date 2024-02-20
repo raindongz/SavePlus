@@ -17,7 +17,6 @@ import (
 
 type CreateNewPostRequest struct {
 	Title        string `json:"title" binding:"required,min=6"`
-	UserId       int64  `json:"user_id" binding:"required,min=1"`
 	Content      string `json:"content" binding:"required,min=10,max=2048"`
 	TotalPrice   string `json:"total_price" binding:"required,min=1"`
 	DeliveryType *int16 `json:"delivery_type" binding:"required,oneof=0 1"`
@@ -65,18 +64,12 @@ func (server *Server) createNewPost(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	if userId != int(req.UserId) {
-		log.ErrorWithCtxFields(ctx, "unauthorized request:")
-		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized request")))
-		return
-	}
 
 	// 2. create new post in databse
 	arg := db.CreateNewPostParams{
 		Title:        req.Title,
 		Content:      req.Content,
 		TotalPrice:   req.TotalPrice,
-		PostUserID:   req.UserId,
 		DeliveryType: *req.DeliveryType,
 		Area: pgtype.Text{
 			String: req.Area,
@@ -330,7 +323,7 @@ func (server *Server) getPostDetailInfoWithAuth(ctx *gin.Context) {
 		Content:      postWithUserDetail.Content,
 		TotalPrice:   postWithUserDetail.TotalPrice,
 		DeliveryType: postWithUserDetail.DeliveryType,
-		PostUserID:   postWithUserDetail.PostUserID,
+		PostUserID:   postWithUserDetail.PostUserID.Int64,
 		Area:         postWithUserDetail.Area.String,
 		ItemNum:      postWithUserDetail.ItemNum,
 		PostStatus:   postWithUserDetail.PostStatus,
@@ -350,7 +343,6 @@ func (server *Server) getPostDetailInfoWithAuth(ctx *gin.Context) {
 
 type UpdatePostInfoRequest struct {
 	PostId       int64  `json:"post_id" binding:"required,min=1"`
-	PostUserID   int64  `json:"post_user_id" binding:"required,min=1"`
 	Title        string `json:"title" binding:"required,min=6"`
 	Content      string `json:"content" binding:"required,min=10,max=2048"`
 	TotalPrice   string `json:"total_price" binding:"required,min=1"`
@@ -398,11 +390,11 @@ func (server *Server) updatePostInfo(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	if userId != int(req.PostUserID) {
-		log.ErrorWithCtxFields(ctx, "unauthorized request:")
-		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized request")))
-		return
-	}
+	// if userId != int(req.PostUserID) {
+	// 	log.ErrorWithCtxFields(ctx, "unauthorized request:")
+	// 	ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized request")))
+	// 	return
+	// }
 
 	// 2. check if post exist
 	postInfo, err := server.store.GetPost(ctx, req.PostId)
@@ -418,7 +410,7 @@ func (server *Server) updatePostInfo(ctx *gin.Context) {
 	}
 
 	// 3. check if post belone to authenticated user
-	if postInfo.PostUserID != int64(userId) {
+	if postInfo.PostUserID.Int64 != int64(userId) {
 		log.ErrorWithCtxFields(ctx, "unauthorized request:", zap.Error(errors.New("unauthorized request")))
 		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized request")))
 		return
@@ -486,7 +478,6 @@ func (server *Server) updatePostInfo(ctx *gin.Context) {
 
 type DeletePostRequest struct {
 	PostId int64 `json:"post_id" binding:"required,min=1"`
-	UserId int64 `json:"user_id" binding:"required,min=1"`
 }
 
 type DeletePostResponse struct {
@@ -508,11 +499,11 @@ func (server *Server) deletePostInfo(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	if userId != int(req.UserId) {
-		log.ErrorWithCtxFields(ctx, "unauthorized request:")
-		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized request")))
-		return
-	}
+	// if userId != int(req.UserId) {
+	// 	log.ErrorWithCtxFields(ctx, "unauthorized request:")
+	// 	ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized request")))
+	// 	return
+	// }
 
 	// 2. get post and compare post.userid with userid in payload
 	postInfo, err := server.store.GetPost(ctx, req.PostId)
@@ -521,7 +512,7 @@ func (server *Server) deletePostInfo(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, errorResponse(err))
 		return
 	}
-	if postInfo.PostUserID != req.UserId {
+	if postInfo.PostUserID.Int64 != int64(userId) {
 		log.ErrorWithCtxFields(ctx, "unauthorized request", zap.Error(err))
 		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
 		return

@@ -40,7 +40,7 @@ func NewPayload(uid string, duration time.Duration) (*Payload, error) {
 }
 
 func (payload *Payload) Valid() error {
-	fmt.Println("hello time is :", payload.ExpiredAt)
+	// fmt.Println("hello time is :", payload.ExpiredAt)
 	if time.Now().After(payload.ExpiredAt) {
 		return ErrExpiredToken
 	}
