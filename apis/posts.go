@@ -143,6 +143,7 @@ type GetPostListResponse struct {
 	Images     string `json:"images"`
 	TotalPrice string `json:"total_price"`
 	Area       string `json:"area"`
+	Liked      int    `json:"liked"`
 }
 
 func (server *Server) getPostList(ctx *gin.Context) {
@@ -154,12 +155,19 @@ func (server *Server) getPostList(ctx *gin.Context) {
 		return
 	}
 
-	// 2. get post list from database
-	arg := db.GetPostListParams{
-		Limit:  int32(*req.PageSize),
-		Offset: (*req.PageNum - 1) * (*req.PageSize),
+	// 2. check if header exist, if exists, check and set userId, otherwise set userId to 0
+	userId, err := server.checkIfUserIdExists(ctx)
+	if err != nil {
+		log.WarnWithCtxFields(ctx, "parse token error in get postList ", zap.Error(err))
 	}
-	postList, err := server.store.GetPostList(ctx, arg)
+
+	// 2. get post list from database
+	arg := db.GetPostListAuthParams{
+		InterestedUserID: userId,
+		Limit:            int32(*req.PageSize),
+		Offset:           (*req.PageNum - 1) * (*req.PageSize),
+	}
+	postList, err := server.store.GetPostListAuth(ctx, arg)
 	if err != nil {
 		if err == db.ErrRecordNotFound {
 			log.ErrorWithCtxFields(ctx, "getPostList: no record found: ", zap.Error(err))
@@ -174,18 +182,55 @@ func (server *Server) getPostList(ctx *gin.Context) {
 	// 3. parse database model to response json object
 	var rsp []GetPostListResponse
 	for i := range postList {
+		like := 0
+		if likeExist := postList[i].Liked.Valid; likeExist {
+			like = 1
+		}
 		listItem := GetPostListResponse{
-			ID:         postList[i].ID,
-			Title:      postList[i].Title,
-			Content:    postList[i].Content,
-			Images:     postList[i].Images,
-			TotalPrice: postList[i].TotalPrice,
+			ID:         postList[i].PostID,
+			Title:      postList[i].PostTitle,
+			Content:    postList[i].PostContent,
+			Images:     postList[i].PostImages,
+			TotalPrice: postList[i].Price,
 			Area:       postList[i].Area.String,
+			Liked:      like,
 		}
 		rsp = append(rsp, listItem)
 	}
 
 	ctx.JSON(http.StatusOK, rsp)
+}
+func (server *Server) checkIfUserIdExists(ctx *gin.Context) (int64, error) {
+	authorizationHeader := ctx.GetHeader(authorizationHeaderKey)
+	// 1. no auth info, set userId to 0 and continue
+	if len(authorizationHeader) == 0 {
+		return 0, nil
+	}
+
+	// 2. check auth info and get id
+	fields := strings.Fields(authorizationHeader)
+	if len(fields) < 2 {
+		return 0, errors.New("not expected auth header type")
+	}
+
+	authorizationType := strings.ToLower(fields[0])
+	if authorizationType != authorizationTypeBearer {
+		return 0, errors.New("not expected token type")
+	}
+
+	accessToken := fields[1]
+	payload, err := server.tokenMaker.VerifyToken(accessToken)
+	if err != nil {
+		return 0, err
+	}
+
+	userId, err := strconv.Atoi(payload.Uid)
+	if err != nil {
+		return 0, err
+	}
+
+	return int64(userId), nil
+
 }
 
 type GetPostDetailWithOutAuthRequest struct {
