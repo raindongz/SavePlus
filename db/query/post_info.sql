@@ -44,13 +44,30 @@ ui.avatar
 from post_info pi left join users_info ui on pi.post_user_id = ui.id
 WHERE pi.id = $1 and pi.deleted_flag = 0 and ui.deleted_flag = 0;
 
--- name: GetPostList :many
+-- name: GetPostListNoAuth :many
 SELECT * FROM post_info
 WHERE 
     deleted_flag = 0
 ORDER BY updated_at desc
 LIMIT $1
 OFFSET $2;
+
+-- name: GetPostListAuth :many
+SELECT p.id as post_id,
+       p.title as post_title,
+       p.content as post_content,
+       p.images as post_images,
+       p.total_price as price,
+       p.area,
+       i.id as liked
+
+FROM post_info p
+    left join interest_info i on i.interested_user_id = $1 AND p.id = i.post_id
+WHERE
+    p.deleted_flag = 0
+ORDER BY p.updated_at desc
+LIMIT $2
+OFFSET $3;
 
 -- name: GetPostInterestList :many
 select

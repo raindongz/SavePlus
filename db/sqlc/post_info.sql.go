@@ -234,7 +234,69 @@ func (q *Queries) GetPostInterestList(ctx context.Context, postID int64) ([]GetP
 	return items, nil
 }
 
-const getPostList = `-- name: GetPostList :many
+const getPostListAuth = `-- name: GetPostListAuth :many
+SELECT p.id as post_id,
+       p.title as post_title,
+       p.content as post_content,
+       p.images as post_images,
+       p.total_price as price,
+       p.area,
+       i.id as liked
+
+FROM post_info p
+    left join interest_info i on i.interested_user_id = $1 AND p.id = i.post_id
+WHERE
+    p.deleted_flag = 0
+ORDER BY p.updated_at desc
+LIMIT $2
+OFFSET $3
+`
+
+type GetPostListAuthParams struct {
+	InterestedUserID int64 `json:"interested_user_id"`
+	Limit            int32 `json:"limit"`
+	Offset           int32 `json:"offset"`
+}
+
+type GetPostListAuthRow struct {
+	PostID      int64       `json:"post_id"`
+	PostTitle   string      `json:"post_title"`
+	PostContent string      `json:"post_content"`
+	PostImages  string      `json:"post_images"`
+	Price       string      `json:"price"`
+	Area        pgtype.Text `json:"area"`
+	Liked       pgtype.Int8 `json:"liked"`
+}
+
+func (q *Queries) GetPostListAuth(ctx context.Context, arg GetPostListAuthParams) ([]GetPostListAuthRow, error) {
+	rows, err := q.db.Query(ctx, getPostListAuth, arg.InterestedUserID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPostListAuthRow{}
+	for rows.Next() {
+		var i GetPostListAuthRow
+		if err := rows.Scan(
+			&i.PostID,
+			&i.PostTitle,
+			&i.PostContent,
+			&i.PostImages,
+			&i.Price,
+			&i.Area,
+			&i.Liked,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPostListNoAuth = `-- name: GetPostListNoAuth :many
 SELECT id, title, content, total_price, post_user_id, delivery_type, area, item_num, post_status, negotiable, images, deleted_flag, created_at, updated_at FROM post_info
 WHERE 
     deleted_flag = 0
@@ -243,13 +305,13 @@ LIMIT $1
 OFFSET $2
 `
 
-type GetPostListParams struct {
+type GetPostListNoAuthParams struct {
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetPostList(ctx context.Context, arg GetPostListParams) ([]PostInfo, error) {
-	rows, err := q.db.Query(ctx, getPostList, arg.Limit, arg.Offset)
+func (q *Queries) GetPostListNoAuth(ctx context.Context, arg GetPostListNoAuthParams) ([]PostInfo, error) {
+	rows, err := q.db.Query(ctx, getPostListNoAuth, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
