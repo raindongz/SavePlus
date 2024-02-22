@@ -345,6 +345,18 @@ func (q *Queries) GetPostListNoAuth(ctx context.Context, arg GetPostListNoAuthPa
 	return items, nil
 }
 
+const soldPost = `-- name: SoldPost :exec
+UPDATE post_info
+SET
+  post_status = 1
+WHERE id = $1
+`
+
+func (q *Queries) SoldPost(ctx context.Context, id int64) error {
+	_, err := q.db.Exec(ctx, soldPost, id)
+	return err
+}
+
 const updatePost = `-- name: UpdatePost :one
 UPDATE post_info
 SET 

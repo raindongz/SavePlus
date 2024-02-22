@@ -99,3 +99,9 @@ UPDATE post_info
 SET
   deleted_flag = 1
 WHERE id = $1;
+
+-- name: SoldPost :exec
+UPDATE post_info
+SET
+  post_status = 1
+WHERE id = $1;

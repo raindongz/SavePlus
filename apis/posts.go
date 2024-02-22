@@ -252,6 +252,9 @@ type GetPostDetailWithOutAuthResponse struct {
 	UpdatedAt    pgtype.Date `json:"updated_at"`
 	Gender       pgtype.Int2 `json:"gender"`
 	Avatar       pgtype.Text `json:"avatar"`
+	Email        pgtype.Text `json:"email"`
+	Phone        pgtype.Text `json:"phone"`
+	FullName     pgtype.Text `json:"full_name"`
 }
 
 func (server *Server) getPostDetailInfoWithOutAuth(ctx *gin.Context) {
@@ -295,6 +298,9 @@ func (server *Server) getPostDetailInfoWithOutAuth(ctx *gin.Context) {
 		UpdatedAt:    postWithUserDetail.UpdatedAt,
 		Gender:       postWithUserDetail.Gender,
 		Avatar:       postWithUserDetail.Avatar,
+		Email:        postWithUserDetail.Email,
+		Phone:        postWithUserDetail.Phone,
+		FullName:     postWithUserDetail.FullName,
 	}
 
 	ctx.JSON(http.StatusOK, rsp)

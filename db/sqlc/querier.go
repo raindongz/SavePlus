@@ -30,6 +30,7 @@ type Querier interface {
 	GetRecordList(ctx context.Context, arg GetRecordListParams) ([]TradingHistory, error)
 	GetUserByEmail(ctx context.Context, email string) (UsersInfo, error)
 	GetUserById(ctx context.Context, id int64) (UsersInfo, error)
+	SoldPost(ctx context.Context, id int64) error
 	UpdatePost(ctx context.Context, arg UpdatePostParams) (PostInfo, error)
 	UpdateUserInfo(ctx context.Context, arg UpdateUserInfoParams) (UsersInfo, error)
 }

@@ -70,6 +70,7 @@ func (server *Server) setUpRouter() {
 	authRoutes.GET("/post/infoAuth", server.getPostDetailInfoWithAuth)
 	authRoutes.POST("/post/update", server.updatePostInfo)
 	authRoutes.POST("/post/delete", server.deletePostInfo)
+	authRoutes.POST("/post/sold", server.soldItem)
 	authRoutes.POST("/post/interest", server.InterestPost)
 	server.router = router
 }
