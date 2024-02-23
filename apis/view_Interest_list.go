@@ -3,13 +3,14 @@ package apis
 import (
 	"context"
 	"errors"
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/nioliu/commons/log"
 	db "github.com/randongz/save_plus/db/sqlc"
 	"github.com/randongz/save_plus/token"
 	"go.uber.org/zap"
-	"net/http"
-	"strconv"
 )
 
 type viewMyInterestReq struct {
@@ -27,6 +28,7 @@ type InterestItem struct {
 	Title   string `json:"title"`
 	Content string `json:"content"`
 	Price   string `json:"price"`
+	Images  string `json:"images"`
 }
 
 func (server *Server) viewMyInterestList(ctx *gin.Context) {
@@ -94,6 +96,7 @@ func transInterestListOuterRsp(ctx context.Context, list []db.GetInterestListByU
 			Status:  row.PostStatus,
 			Title:   row.Title,
 			Content: row.Content,
+			Images:  row.Images,
 		}
 		outerItems = append(outerItems, i)
 	}
