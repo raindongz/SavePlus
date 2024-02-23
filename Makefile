@@ -2,7 +2,7 @@ createdb:
 	docker exec -it postgres16 createdb --username=root --owner=root save_plus
 
 dropdb:
-	docker exec -it postgres16 dropdb simple_bank
+	docker exec -it postgres16 dropdb save_plus
 
 migrateup:
 	migrate -path db/migration -database "postgres://root:secret@localhost:5432/save_plus?sslmode=disable" -verbose up
