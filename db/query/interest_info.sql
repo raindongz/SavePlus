@@ -24,4 +24,4 @@ ON i.interested_user_id = p.post_user_id
 WHERE interested_user_id = $1 ;
 
 -- name: GetMyPostList :many
-SELECT * FROM post_info p where p.post_user_id = $1;
+SELECT * FROM post_info p where p.post_user_id = $1 AND p.deleted_flag=0;

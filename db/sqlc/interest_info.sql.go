@@ -128,7 +128,7 @@ func (q *Queries) GetInterestRecordByUserIdAndPostId(ctx context.Context, arg Ge
 }
 
 const getMyPostList = `-- name: GetMyPostList :many
-SELECT id, title, content, total_price, post_user_id, delivery_type, area, item_num, post_status, negotiable, images, deleted_flag, created_at, updated_at FROM post_info p where p.post_user_id = $1
+SELECT id, title, content, total_price, post_user_id, delivery_type, area, item_num, post_status, negotiable, images, deleted_flag, created_at, updated_at FROM post_info p where p.post_user_id = $1 AND p.deleted_flag=0
 `
 
 func (q *Queries) GetMyPostList(ctx context.Context, postUserID int64) ([]PostInfo, error) {
