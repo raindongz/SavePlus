@@ -18,10 +18,10 @@ DELETE FROM interest_info
 WHERE id = $1;
 
 -- name: GetInterestListByUserID :many
-SELECT i.*,p.* FROM interest_info i
-JOIN post_info p
-ON i.interested_user_id = p.post_user_id
-WHERE interested_user_id = $1 ;
+SELECT p.* FROM post_info p
+LEFT JOIN  interest_info i
+ON p.id = i.post_id
+WHERE i.interested_user_id = $1;
 
 -- name: GetMyPostList :many
 SELECT * FROM post_info p where p.post_user_id = $1 AND p.deleted_flag=0;

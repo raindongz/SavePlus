@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-type userLoginReq struct {
+type UserLoginReq struct {
 	Email    string `json:"email,omitempty"`
 	Password string `json:"password,omitempty"`
 }
@@ -36,7 +36,7 @@ func (server *Server) userLogin(ctx *gin.Context) {
 		rsp.Status = rspStatus
 		ctx.JSON(statusCode, rsp)
 	}()
-	req := new(userLoginReq)
+	req := new(UserLoginReq)
 	if err = ctx.ShouldBindJSON(req); err != nil {
 		log.ErrorWithCtxFields(ctx, "bind json failed", zap.Error(err))
 		statusCode = http.StatusBadRequest
@@ -44,7 +44,7 @@ func (server *Server) userLogin(ctx *gin.Context) {
 	}
 
 	// 1. check basic user info
-	if err = checkLoginUserInfoParams(ctx, req); err != nil {
+	if err = CheckLoginUserInfoParams(ctx, req); err != nil {
 		log.ErrorWithCtxFields(ctx, "check basic user info failed", zap.Error(err))
 		statusCode = http.StatusBadRequest
 		return
@@ -76,12 +76,12 @@ func (server *Server) userLogin(ctx *gin.Context) {
 
 }
 
-func checkLoginUserInfoParams(ctx context.Context, userInfo *userLoginReq) error {
-	if userInfo.Password == "" {
+func CheckLoginUserInfoParams(ctx context.Context, userInfo *UserLoginReq) error {
+	if len(strings.TrimSpace(userInfo.Password)) == 0 {
 		log.ErrorWithCtxFields(ctx, "password is empty")
 		return fmt.Errorf("password is empty")
 	}
-	if userInfo.Email == "" {
+	if len(strings.TrimSpace(userInfo.Email)) == 0 {
 		log.ErrorWithCtxFields(ctx, "email is empty")
 		return fmt.Errorf("email is empty")
 	}

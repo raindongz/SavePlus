@@ -17,7 +17,7 @@ type Querier interface {
 	DeletePost(ctx context.Context, id int64) error
 	DeleteTradingRecord(ctx context.Context, arg DeleteTradingRecordParams) error
 	DeleteUser(ctx context.Context, id int64) error
-	GetInterestListByUserID(ctx context.Context, interestedUserID int64) ([]GetInterestListByUserIDRow, error)
+	GetInterestListByUserID(ctx context.Context, interestedUserID int64) ([]PostInfo, error)
 	GetInterestRecordByUserIdAndPostId(ctx context.Context, arg GetInterestRecordByUserIdAndPostIdParams) (int64, error)
 	GetMyPostList(ctx context.Context, postUserID int64) ([]PostInfo, error)
 	GetPost(ctx context.Context, id int64) (PostInfo, error)
