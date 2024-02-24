@@ -1,4 +1,4 @@
-package user
+package test
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestEmail(t *testing.T) {
+func TestCreateEmail(t *testing.T) {
 	var tests = []struct {
 		name     string
 		email    string
@@ -40,7 +40,7 @@ func TestEmail(t *testing.T) {
 	}
 }
 
-func TestUsername(t *testing.T) {
+func TestCreateUsername(t *testing.T) {
 	var tests = []struct {
 		name     string
 		username string
@@ -70,7 +70,7 @@ func TestUsername(t *testing.T) {
 	}
 }
 
-func TestPassword(t *testing.T) {
+func TestCreatePassword(t *testing.T) {
 	var tests = []struct {
 		name     string
 		password string
