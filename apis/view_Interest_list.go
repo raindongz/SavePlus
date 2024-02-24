@@ -88,11 +88,11 @@ func (server *Server) doViewMyInterestList(ctx context.Context,
 }
 
 // trans interest list to outer rsp
-func transInterestListOuterRsp(ctx context.Context, list []db.GetInterestListByUserIDRow) ([]InterestItem, error) {
+func transInterestListOuterRsp(ctx context.Context, list []db.PostInfo) ([]InterestItem, error) {
 	outerItems := make([]InterestItem, 0, len(list))
 	for _, row := range list {
 		i := InterestItem{
-			PostId:  row.PostID,
+			PostId:  row.ID,
 			Status:  row.PostStatus,
 			Title:   row.Title,
 			Content: row.Content,
