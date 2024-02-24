@@ -308,7 +308,6 @@ func (server *Server) getPostDetailInfoWithOutAuth(ctx *gin.Context) {
 
 type GetPostDetailInfoWithAuthRequest struct {
 	PostId int64 `form:"post_id" binding:"required,min=1"`
-	UserId int64 `form:"user_id" binding:"required,min=1"`
 }
 
 type GetPostDetailInfoWithAuthResponse struct {
@@ -343,15 +342,10 @@ func (server *Server) getPostDetailInfoWithAuth(ctx *gin.Context) {
 
 	// 2.authorization
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
-	userId, err := strconv.Atoi(authPayload.Uid)
+	_, err := strconv.Atoi(authPayload.Uid)
 	if err != nil {
 		log.ErrorWithCtxFields(ctx, "user id convertion failed", zap.Error(err))
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	if userId != int(req.UserId) {
-		log.ErrorWithCtxFields(ctx, "unauthorized request:")
-		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized request")))
 		return
 	}
 
@@ -566,7 +560,7 @@ func (server *Server) deletePostInfo(ctx *gin.Context) {
 	}
 	if postInfo.PostUserID != int64(userId) {
 		log.ErrorWithCtxFields(ctx, "unauthorized request", zap.Error(err))
-		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		ctx.Status(http.StatusUnauthorized)
 		return
 	}
 
@@ -673,42 +667,3 @@ func (server *Server) InterestPost(ctx *gin.Context) {
 
 	}
 }
-
-// private method for create new post and update new post response
-// func (server *Server) getUserInfoForCreateAndUpdatePostResponse(ctx *gin.Context, userId int, post db.PostInfo)(CreateOrUpdatePostResponse, error){
-// 	var rsp CreateOrUpdatePostResponse
-// 	user, err := server.store.GetUserById(ctx, int64(userId))
-// 	if err != nil {
-// 		if err == db.ErrRecordNotFound {
-// 			log.ErrorWithCtxFields(ctx, "record not found", zap.Error(err))
-// 			ctx.JSON(http.StatusNotFound, errorResponse(err))
-// 			return rsp, err
-// 		}
-// 		log.ErrorWithCtxFields(ctx, "internal server error", zap.Error(err))
-// 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-// 		return rsp, err
-// 	}
-
-// 	// 6. put user info in response alone with post info just created
-// 	rsp = CreateOrUpdatePostResponse{
-// 		PostId:       post.ID,
-// 		PostUserID:   user.ID,
-// 		Title:        post.Title,
-// 		Content:      post.Content,
-// 		TotalPrice:   post.TotalPrice,
-// 		DeliveryType: post.DeletedFlag,
-// 		Area:         post.Area.String,
-// 		ItemNum:      post.ItemNum,
-// 		PostStatus:   post.PostStatus,
-// 		Negotiable:   post.Negotiable,
-// 		Images:       post.Images,
-// 		CreatedAt:    post.CreatedAt,
-// 		UpdatedAt:    post.UpdatedAt,
-// 		Gender:       user.Gender,
-// 		Avatar:       user.Avatar,
-// 		FullName:     user.FullName,
-// 		Email:        user.Email,
-// 		Phone:        user.Phone.String,
-// 	}
-// 	return rsp, nil
-// }
