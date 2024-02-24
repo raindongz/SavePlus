@@ -9,9 +9,11 @@ import (
 	db "github.com/randongz/save_plus/db/sqlc"
 	"go.uber.org/zap"
 	"net/http"
+	"net/mail"
+	"strings"
 )
 
-type createUserReq struct {
+type CreateUserReq struct {
 	Username string `json:"username,omitempty"`
 	Password string `json:"password,omitempty"`
 	Email    string `json:"email,omitempty"`
@@ -27,7 +29,7 @@ type createUserRsp struct {
 
 func (server *Server) createUser(ctx *gin.Context) {
 	rsp := new(createUserRsp)
-	req := new(createUserReq)
+	req := new(CreateUserReq)
 	if err := ctx.ShouldBindJSON(req); err != nil {
 		log.ErrorWithCtxFields(ctx, "bind json failed", zap.Error(err))
 		ctx.Status(http.StatusBadRequest)
@@ -42,9 +44,9 @@ func (server *Server) createUser(ctx *gin.Context) {
 
 }
 
-func (server *Server) doCreateUser(ctx context.Context, req *createUserReq,
+func (server *Server) doCreateUser(ctx context.Context, req *CreateUserReq,
 	rsp *createUserRsp) (statusCode int, err error) {
-	if err = checkBasicUserInfoParams(ctx, req); err != nil {
+	if err = CheckBasicUserInfoParams(ctx, req); err != nil {
 		log.ErrorWithCtxFields(ctx, "check basic user info failed", zap.Error(err))
 		rsp.Detail = "check basic user info failed"
 		return http.StatusUnauthorized, err
@@ -73,18 +75,28 @@ func (server *Server) doCreateUser(ctx context.Context, req *createUserReq,
 	return http.StatusOK, nil
 }
 
-func checkBasicUserInfoParams(ctx context.Context, createUserReq *createUserReq) error {
-	if createUserReq.Username == "" {
+func validMailAddress(address string) (string, bool) {
+	addr, err := mail.ParseAddress(address)
+	if err != nil {
+		return "", false
+	}
+	return addr.Address, true
+}
+
+func CheckBasicUserInfoParams(ctx context.Context, createUserReq *CreateUserReq) error {
+	if len(strings.TrimSpace(createUserReq.Username)) == 0 {
 		log.ErrorWithCtxFields(ctx, "username is empty")
 		return fmt.Errorf("username is empty")
-	}
-	if createUserReq.Password == "" {
+	} else if len(strings.TrimSpace(createUserReq.Password)) == 0 {
 		log.ErrorWithCtxFields(ctx, "password is empty")
 		return fmt.Errorf("password is empty")
-	}
-	if createUserReq.Email == "" {
+	} else if len(strings.TrimSpace(createUserReq.Email)) == 0 {
 		log.ErrorWithCtxFields(ctx, "email is empty")
 		return fmt.Errorf("email is empty")
+	} else if _, ok := validMailAddress(createUserReq.Email); !ok {
+		log.ErrorWithCtxFields(ctx, "email is invalid")
+		return fmt.Errorf("email is invalid")
 	}
+
 	return nil
 }
