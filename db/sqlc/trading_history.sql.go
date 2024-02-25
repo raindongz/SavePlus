@@ -71,7 +71,7 @@ func (q *Queries) DeleteTradingRecord(ctx context.Context, arg DeleteTradingReco
 const getPurchaseByUserId = `-- name: GetPurchaseByUserId :many
 SELECT t.id, t.post_id, t.sold_to_user_id, t.seller_id, t.price, t.deleted_flag, t.created_at, t.updated_at,p.id, p.title, p.content, p.total_price, p.post_user_id, p.delivery_type, p.area, p.item_num, p.post_status, p.negotiable, p.images, p.deleted_flag, p.created_at, p.updated_at FROM trading_history as t
 LEFT JOIN post_info as p
-ON t.post_id==p.post_id
+ON t.post_id=p.id
 WHERE sold_to_user_id = $1
 `
 
