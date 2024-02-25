@@ -1,10 +1,9 @@
-package test
+package apis
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	apis "github.com/randongz/save_plus/apis"
 	"testing"
 )
 
@@ -25,14 +24,14 @@ func TestCreateEmail(t *testing.T) {
 	ctx := context.Background()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			request := apis.CreateUserReq{
+			request := CreateUserReq{
 				Username: "test",
 				Password: "test",
 				Email:    tt.email,
 				Phone:    "+12222222222",
 				Gender:   0,
 				Avatar:   ""}
-			ans := apis.CheckBasicUserInfoParams(ctx, &request)
+			ans := CheckBasicUserInfoParams(ctx, &request)
 			if !errors.Is(ans, tt.expected) && ans.Error() != tt.expected.Error() {
 				t.Errorf("got %s, want %s", ans, tt.expected)
 			}
@@ -55,14 +54,14 @@ func TestCreateUsername(t *testing.T) {
 	ctx := context.Background()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			request := apis.CreateUserReq{
+			request := CreateUserReq{
 				Username: tt.username,
 				Password: "test",
 				Email:    "test@test.com",
 				Phone:    "+12222222222",
 				Gender:   0,
 				Avatar:   ""}
-			ans := apis.CheckBasicUserInfoParams(ctx, &request)
+			ans := CheckBasicUserInfoParams(ctx, &request)
 			if !errors.Is(ans, tt.expected) && ans.Error() != tt.expected.Error() {
 				t.Errorf("got %s, want %s", ans, tt.expected)
 			}
@@ -85,14 +84,14 @@ func TestCreatePassword(t *testing.T) {
 	ctx := context.Background()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			request := apis.CreateUserReq{
+			request := CreateUserReq{
 				Username: "test",
 				Password: tt.password,
 				Email:    "test@test.com",
 				Phone:    "+12222222222",
 				Gender:   0,
 				Avatar:   ""}
-			ans := apis.CheckBasicUserInfoParams(ctx, &request)
+			ans := CheckBasicUserInfoParams(ctx, &request)
 			if !errors.Is(ans, tt.expected) && ans.Error() != tt.expected.Error() {
 				t.Errorf("got %s, want %s", ans, tt.expected)
 			}

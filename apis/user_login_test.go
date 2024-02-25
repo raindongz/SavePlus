@@ -1,10 +1,9 @@
-package test
+package apis
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	apis "github.com/randongz/save_plus/apis"
 	"testing"
 )
 
@@ -23,11 +22,11 @@ func TestLoginEmail(t *testing.T) {
 	ctx := context.Background()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			request := apis.UserLoginReq{
+			request := UserLoginReq{
 				Password: "test",
 				Email:    tt.email,
 			}
-			ans := apis.CheckLoginUserInfoParams(ctx, &request)
+			ans := CheckLoginUserInfoParams(ctx, &request)
 			if !errors.Is(ans, tt.expected) && ans.Error() != tt.expected.Error() {
 				t.Errorf("got %s, want %s", ans, tt.expected)
 			}
@@ -50,11 +49,11 @@ func TestLoginPassword(t *testing.T) {
 	ctx := context.Background()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			request := apis.UserLoginReq{
+			request := UserLoginReq{
 				Password: tt.password,
 				Email:    "test@test.com",
 			}
-			ans := apis.CheckLoginUserInfoParams(ctx, &request)
+			ans := CheckLoginUserInfoParams(ctx, &request)
 			if !errors.Is(ans, tt.expected) && ans.Error() != tt.expected.Error() {
 				t.Errorf("got %s, want %s", ans, tt.expected)
 			}
