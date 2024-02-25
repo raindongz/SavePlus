@@ -323,6 +323,22 @@ func Test_Interest(t *testing.T) {
 				require.Equal(t, http.StatusOK, recorder.Code)
 			},
 		},
+		{
+			name:   "Unauthorized",
+			method: "POST",
+			path:   "/post/interest",
+			function: func(server *Server) func(ctx *gin.Context) {
+				return server.InterestPost
+			},
+			isAuth: false,
+			req: InterestPostRequest{
+				PostId: 6,
+			},
+			setAuthHeader: setAuthHeader,
+			checkResponse: func(t *testing.T, req *http.Request, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusUnauthorized, recorder.Code)
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
