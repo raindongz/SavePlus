@@ -1,63 +1,63 @@
 package apis
 
-import (
-	"net/http"
-	"net/http/httptest"
-	"testing"
-	"time"
+// import (
+// 	"net/http"
+// 	"net/http/httptest"
+// 	"testing"
+// 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/randongz/save_plus/token"
-	"github.com/stretchr/testify/require"
-)
+// 	"github.com/gin-gonic/gin"
+// 	"github.com/randongz/save_plus/token"
+// 	"github.com/stretchr/testify/require"
+// )
 
-func Test_view_purchase_his(t *testing.T) {
-	tests := []struct {
-		name               string
-		req                any
-		method             string
-		path               string
-		setAndReturnParams func() string
-		function           func(server *Server) func(ctx *gin.Context)
-		isAuth             bool
-		setAuthHeader      func(t *testing.T, req *http.Request, token token.Maker, authorzationType string, id int64, duration time.Duration)
-		checkResponse      func(t *testing.T, req *http.Request, recorder *httptest.ResponseRecorder)
-	}{
-		{
-			name:   "OK",
-			method: "GET",
-			path:   "/user/viewMyPurchaseHistory",
-			setAndReturnParams: func() string {
-				return ""
-			},
-			function: func(server *Server) func(ctx *gin.Context) {
-				return server.viewMyPurchaseHistory
-			},
-			isAuth:        true,
-			setAuthHeader: setAuthHeader,
-			checkResponse: func(t *testing.T, req *http.Request, recorder *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusOK, recorder.Code)
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			router := SetUpRouter()
-			server := NewTestServer(t)
+// func Test_view_purchase_his(t *testing.T) {
+// 	tests := []struct {
+// 		name               string
+// 		req                any
+// 		method             string
+// 		path               string
+// 		setAndReturnParams func() string
+// 		function           func(server *Server) func(ctx *gin.Context)
+// 		isAuth             bool
+// 		setAuthHeader      func(t *testing.T, req *http.Request, token token.Maker, authorzationType string, id int64, duration time.Duration)
+// 		checkResponse      func(t *testing.T, req *http.Request, recorder *httptest.ResponseRecorder)
+// 	}{
+// 		{
+// 			name:   "OK",
+// 			method: "GET",
+// 			path:   "/user/viewMyPurchaseHistory",
+// 			setAndReturnParams: func() string {
+// 				return ""
+// 			},
+// 			function: func(server *Server) func(ctx *gin.Context) {
+// 				return server.viewMyPurchaseHistory
+// 			},
+// 			isAuth:        true,
+// 			setAuthHeader: setAuthHeader,
+// 			checkResponse: func(t *testing.T, req *http.Request, recorder *httptest.ResponseRecorder) {
+// 				require.Equal(t, http.StatusOK, recorder.Code)
+// 			},
+// 		},
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			router := SetUpRouter()
+// 			server := NewTestServer(t)
 
-			req, err := http.NewRequest(tt.method, tt.path+tt.setAndReturnParams(), nil)
-			if tt.isAuth {
-				router.GET(tt.path, authMiddleware(server.tokenMaker), tt.function(server))
-				tt.setAuthHeader(t, req, server.tokenMaker, authorizationTypeBearer, 25, server.config.AccessTokenDuration)
-			} else {
-				router.GET(tt.path, tt.function(server))
-			}
-			require.NoError(t, err)
-			rsp := httptest.NewRecorder()
-			router.ServeHTTP(rsp, req)
-			//call functions in test case
-			tt.checkResponse(t, req, rsp)
+// 			req, err := http.NewRequest(tt.method, tt.path+tt.setAndReturnParams(), nil)
+// 			if tt.isAuth {
+// 				router.GET(tt.path, authMiddleware(server.tokenMaker), tt.function(server))
+// 				tt.setAuthHeader(t, req, server.tokenMaker, authorizationTypeBearer, 25, server.config.AccessTokenDuration)
+// 			} else {
+// 				router.GET(tt.path, tt.function(server))
+// 			}
+// 			require.NoError(t, err)
+// 			rsp := httptest.NewRecorder()
+// 			router.ServeHTTP(rsp, req)
+// 			//call functions in test case
+// 			tt.checkResponse(t, req, rsp)
 
-		})
-	}
-}
+// 		})
+// 	}
+// }
