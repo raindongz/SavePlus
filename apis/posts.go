@@ -57,8 +57,19 @@ func (server *Server) createNewPost(ctx *gin.Context) {
 	}
 
 	// 1. authentication
-	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
-	userId, err := strconv.Atoi(authPayload.Uid)
+	authPayload, exist := ctx.Get(authorizationPayloadKey)
+	if !exist {
+		log.ErrorWithCtxFields(ctx, "unauthorized request:", zap.Error(errors.New("unauthorized request")))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unauthorized request")))
+		return
+	}
+	payload, is := authPayload.(*token.Payload)
+	if !is {
+		log.ErrorWithCtxFields(ctx, "unexpected payload type", zap.Error(errors.New("unexpected payload type")))
+		ctx.JSON(http.StatusUnauthorized, errorResponse(errors.New("unexpected payload type")))
+		return
+	}
+	userId, err := strconv.Atoi(payload.Uid)
 	if err != nil {
 		log.ErrorWithCtxFields(ctx, "user id convertion failed", zap.Error(err))
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -620,8 +631,20 @@ func (server *Server) InterestPost(ctx *gin.Context) {
 	}
 
 	// 1. get user id from token
-	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
-	userId, err := strconv.Atoi(authPayload.Uid)
+	authPayload, exists := ctx.Get(authorizationPayloadKey)
+	if !exists {
+		log.WarnWithCtxFields(ctx, "no payload exist")
+		ctx.Status(http.StatusUnauthorized)
+		return
+	}
+	payload, is := authPayload.(*token.Payload)
+	if !is {
+		log.WarnWithCtxFields(ctx, "unexpected payload type")
+		ctx.Status(http.StatusUnauthorized)
+		return
+	}
+
+	userId, err := strconv.Atoi(payload.Uid)
 	if err != nil {
 		log.ErrorWithCtxFields(ctx, "user id convert failed", zap.Error(err))
 		ctx.JSON(http.StatusUnauthorized, errorResponse(err))

@@ -14,9 +14,12 @@ sqlc:
 	sqlc generate
 
 test:
+	go test -cover ./...
+
+test_v:
 	go test -v -cover ./...
 
 server:
 	go run main.go
 
-.PHONY: createdb dropdb migrateup migratedown sqlc test server
+.PHONY: createdb dropdb migrateup migratedown sqlc test server test_v
