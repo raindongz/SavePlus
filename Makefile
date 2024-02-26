@@ -15,7 +15,7 @@ sqlc:
 
 test:
 	go test -cover ./...
-	
+
 test_v:
 	go test -v -cover ./...
 
